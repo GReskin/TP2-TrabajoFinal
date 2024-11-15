@@ -1,6 +1,12 @@
- import Sequelize from 'sequelize'
+import Sequelize from 'sequelize'
 
-const sequelize = new Sequelize('DESKTOP-34IG7U7\SQLEXPRESS\TiendaDeVideojuegos') 
+import dotenv from 'dotenv'
+dotenv.config()
+
+ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+  host: 'localhost',
+  dialect: 'postgres' 
+});
 
 try {
     await sequelize.authenticate();
