@@ -8,7 +8,10 @@ class ClientesRoutes{
     start(){
         const routerCliente = express.Router();
         routerCliente.post('/clientes', this.clientesController.altaCliente);
-        //routerNotas.get('/listado', this.controladorNotas.obtenerListado);
+        routerCliente.get('/clientes', this.clientesController.obtenerClientes);
+        routerCliente.get('/clientes/:id', this.clientesController.obtenerClientePorId);
+        routerCliente.put('/clientes/:id', this.clientesController.actualizarCliente);
+        routerCliente.delete('/clientes/:id', this.clientesController.borrarCliente);
         return routerCliente
     }
 }
