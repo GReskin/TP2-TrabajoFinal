@@ -6,7 +6,6 @@ import PdfDocument from 'pdfkit';
 import fs from 'fs';
 
 import nodemailer from 'nodemailer';
-import sendgridTransport from "nodemailer-sendgrid-transport";
 
 class InformeService {
     constructor(){
@@ -110,6 +109,10 @@ class InformeService {
     }
 
     async obtenerInformePorMail(fechaInicial, fechaFinal, mail){
+        let rutaInforme = await this.obtenerInforme(fechaInicial, fechaFinal);
+
+        let res;
+
         const options = {
             service: 'gmail',
             auth: {
@@ -125,16 +128,23 @@ class InformeService {
             to: mail,
             subject: 'Informe de ventas',
             text: 'Informe de ventas',
+            attachments: [
+                {
+                    filename: 'Informe.pdf',
+                    path: rutaInforme
+                }
+            ]
         }
 
         transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 console.log('Error al enviar el informe: ' + error);
-                return 'Error al enviar el informe: ' + error;
+                res = 'Error al enviar el informe: ' + error;
             }
             console.log('Informe enviado correctamente ' + info.response);
-            return 'Informe enviado correctamente';
+            res = 'Informe enviado correctamente';
         });
+        return res;
     }
 }
 
