@@ -5,6 +5,9 @@ import ClientesModel from "../Model/ClientesModel.js";
 import PdfDocument from 'pdfkit';
 import fs from 'fs';
 
+import nodemailer from 'nodemailer';
+import sendgridTransport from "nodemailer-sendgrid-transport";
+
 class InformeService {
     constructor(){
         this.ventas = new VentasModel();
@@ -86,7 +89,6 @@ class InformeService {
         juegoMasVendidoPorCategoria.forEach(juego => {
             doc.fontSize(12).text(juego.categoria + ': ' + juego.nombrejuego , {align: 'left'}).moveDown(1);
         });
-        console.log(clienteConMasCompras);
         doc.fontSize(15).text('Cliente con más compras: ' + clienteConMasCompras[0].nombrecliente, {align: 'left'}).moveDown(1);
 
         doc.end();
@@ -107,6 +109,61 @@ class InformeService {
         return rutaInforme;
     }
 
+    async obtenerInformePorMail(fechaInicial, fechaFinal, mail){
+        const options = {
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.PASSWORD    
+            }
+        }
+
+        const transporter = nodemailer.createTransport(options);
+
+        const mailOptions = {
+            from: process.env.EMAIL,
+            to: mail,
+            subject: 'Informe de ventas',
+            text: 'Informe de ventas',
+        }
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log('Error al enviar el informe: ' + error);
+                return 'Error al enviar el informe: ' + error;
+            }
+            console.log('Informe enviado correctamente ' + info.response);
+            return 'Informe enviado correctamente';
+        });
+    }
 }
 
 export default InformeService;
+
+/* async obtenerInformePorMail(fechaInicial, fechaFinal, mail){
+    let rutaInforme = await this.obtenerInforme(fechaInicial, fechaFinal);
+    let res;
+    try {
+            const mailOptions = {
+                host: 'smtp.ethereal.email',
+                port: 587,
+                auth: {
+                    user: 'lolita.runolfsson49@ethereal.email',
+                    pass: 'Q4uB9KSgUS2c8w71X7'
+                }
+        };
+
+        let transporter = nodemailer.createTransport(mailOptions);
+
+        const info = await transporter.sendMail({
+            from: 'lolita.runolfsson49@ethereal.email',
+            to: mail,
+            subject: 'Informe de ventas',
+            text: 'Informe de ventas'
+        });
+        res = info;
+    } catch (error) {
+        res = 'Error al enviar el informe: ' + error;
+    }
+    return res;
+} */
