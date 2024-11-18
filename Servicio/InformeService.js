@@ -2,6 +2,9 @@ import VentasModel from "../Model/VentasModel.js";
 import JuegosModel from "../Model/JuegosModel.js";
 import ClientesModel from "../Model/ClientesModel.js";
 
+import PdfDocument from 'pdfkit';
+import fs from 'fs';
+
 class InformeService {
     constructor(){
         this.ventas = new VentasModel();
@@ -71,12 +74,34 @@ class InformeService {
         let juegoMasVendido = this.obtenerJuegoMasVendido(fechaInicial, fechaFinal);
         let juegoMasVendidoPorCategoria = this.obtenerJuegoMasVendidoPorCategoria(fechaInicial, fechaFinal);
         let clienteConMasCompras = this.obtenerClienteConMasCompras(fechaInicial, fechaFinal);
+
+        const doc = new PdfDocument();
+        const nombreInforme = 'Informe de ventas ' + Date.now();
+        const informe = './informes/' + nombreInforme + '.pdf';
+        doc.pipe(fs.createWriteStream(informe));
+
+        doc.fontSize(20).text('Tienda de videojuegos', {align: 'center'}).moveDown(1);
+        doc.fontSize(16).text('Fecha de solicitud del informe: ' + new Date(), {align: 'left'}).moveDown(1);
+        doc.fontSize(15).text('Informe de ventas ' + fechaInicial + ' a ' + fechaFinal, {align: 'left'}).moveDown(1);
+        doc.fontSize(15).text('Juegos pedidos: ', {align: 'left'}).moveDown(1);
+        //juegosPedidos.forEach(juego => {
+        //    doc.fontSize(12).text(juego.nombreJuego + ': ' + juego.cantidadVentas, {align: 'left'}).moveDown(1);
+        //});
+        doc.fontSize(15).text('Total de ventas: ', {align: 'left'}).moveDown(1);
+        doc.fontSize(12).text(totalVentas, {align: 'left'}).moveDown(1);
+        doc.fontSize(15).text('Juego más vendido: ', {align: 'left'}).moveDown(1);
+        doc.fontSize(12).text(juegoMasVendido.nombreJuego + ': ' + juegoMasVendido.cantidadVentas, {align: 'left'}).moveDown(1);
+        doc.fontSize(15).text('Juego más vendido por categoría: ', {align: 'left'}).moveDown(1);
+        //juegoMasVendidoPorCategoria.forEach(juego => {
+        //    doc.fontSize(12).text(juego.categoria + ': ' + juego.nombreJuego , {align: 'left'}).moveDown(1);
+        //});
+        doc.fontSize(15).text('Cliente con más compras: ', {align: 'left'}).moveDown(1);
+        doc.fontSize(12).text(clienteConMasCompras.nombreCliente, {align: 'left'}).moveDown(1);
+
+        doc.end();
     
-        return juegoMasVendidoPorCategoria;
+        return informe;
     }
-
-
-    
 
 }
 
