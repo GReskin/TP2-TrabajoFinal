@@ -24,6 +24,19 @@ class ClientesModel{
     async deleteCliente(id){
         await Cliente.destroy({where: {id: id}});
     }
+
+    async obtenerClienteConMasCompras(fechaInicial, fechaFinal){
+        const query = `SELECT c.nombre as nombreCliente,
+                        COUNT(*) as cantidadCompras
+                        FROM ventas v
+                        JOIN clientes c on c.id = v.id_cliente
+                        WHERE fecha between to_date('${fechaInicial}', 'dd-mm-yyyy') and to_date('${fechaFinal}', 'dd-mm-yyyy')
+                        GROUP BY c.nombre
+                        ORDER BY COUNT(*) DESC
+                        LIMIT 1;`;
+
+        return await Cliente.sequelize.query(query, { type: Cliente.sequelize.QueryTypes.SELECT });
+    }
 } 
 
 export default ClientesModel;

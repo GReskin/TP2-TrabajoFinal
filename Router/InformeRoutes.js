@@ -7,7 +7,8 @@ class InformeRoutes{
     }
     start(){
         const routerInforme = express.Router();
-        routerInforme.get('/informe', this.informeController.obtenerInforme);
+        routerInforme.get('/informe/rango', this.informeController.obtenerInforme);
+        routerInforme.get('/informe/diario', this.informeController.obtenerInformeDiario);
         return routerInforme
     }
 }

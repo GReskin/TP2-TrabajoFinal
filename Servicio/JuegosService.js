@@ -8,6 +8,7 @@ class JuegosService{
     async altaJuego(juego){
         let juegoValido = true;
         let res;
+        console.log(juego)
         try{
             if (juego.nombre == '' || juego.nombre == null){
                 juegoValido = false;
@@ -20,8 +21,8 @@ class JuegosService{
             }
 
             if(juegoValido){
-                let juego = await this.juegos.altaJuego(juego);
-                res = 'Se creo el juego: ' + juego;
+                juego = await this.juegos.altaJuego(juego);
+                res = 'Se creo el juego: ' + juego.id;
             } else {
                 res = {error: 'Error al dar de alta el juego, datos invalidos'};
             }
