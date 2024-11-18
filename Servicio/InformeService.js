@@ -67,14 +67,7 @@ class InformeService {
         return res;
     }
 
-    obtenerInforme(fechaInicial, fechaFinal){
-        
-        let juegosPedidos = this.obtenerJuegosPedidos(fechaInicial, fechaFinal);
-        let totalVentas = this.obtenerTotalVentas(fechaInicial, fechaFinal);
-        let juegoMasVendido = this.obtenerJuegoMasVendido(fechaInicial, fechaFinal);
-        let juegoMasVendidoPorCategoria = this.obtenerJuegoMasVendidoPorCategoria(fechaInicial, fechaFinal);
-        let clienteConMasCompras = this.obtenerClienteConMasCompras(fechaInicial, fechaFinal);
-
+    async generarPdf(juegosPedidos, totalVentas, juegoMasVendido, juegoMasVendidoPorCategoria, clienteConMasCompras, fechaInicial, fechaFinal){
         const doc = new PdfDocument();
         const nombreInforme = 'Informe de ventas ' + Date.now();
         const informe = './informes/' + nombreInforme + '.pdf';
@@ -84,23 +77,34 @@ class InformeService {
         doc.fontSize(16).text('Fecha de solicitud del informe: ' + new Date(), {align: 'left'}).moveDown(1);
         doc.fontSize(15).text('Informe de ventas ' + fechaInicial + ' a ' + fechaFinal, {align: 'left'}).moveDown(1);
         doc.fontSize(15).text('Juegos pedidos: ', {align: 'left'}).moveDown(1);
-        //juegosPedidos.forEach(juego => {
-        //    doc.fontSize(12).text(juego.nombreJuego + ': ' + juego.cantidadVentas, {align: 'left'}).moveDown(1);
-        //});
-        doc.fontSize(15).text('Total de ventas: ', {align: 'left'}).moveDown(1);
-        doc.fontSize(12).text(totalVentas, {align: 'left'}).moveDown(1);
-        doc.fontSize(15).text('Juego más vendido: ', {align: 'left'}).moveDown(1);
-        doc.fontSize(12).text(juegoMasVendido.nombreJuego + ': ' + juegoMasVendido.cantidadVentas, {align: 'left'}).moveDown(1);
+        juegosPedidos.forEach(juego => {
+            doc.fontSize(12).text(" " + juego.nombrejuego + ': ' + juego.cantidadventas, {align: 'left'}).moveDown(1);
+        });
+        doc.fontSize(15).text('Total de ventas: ' + totalVentas[0].totalventas, {align: 'left'}).moveDown(1);
+        doc.fontSize(15).text('Juego más vendido: ' + juegoMasVendido[0].nombrejuego + ': ' + juegoMasVendido[0].cantidadventas + ' copias vendidas', {align: 'left'}).moveDown(1);
         doc.fontSize(15).text('Juego más vendido por categoría: ', {align: 'left'}).moveDown(1);
-        //juegoMasVendidoPorCategoria.forEach(juego => {
-        //    doc.fontSize(12).text(juego.categoria + ': ' + juego.nombreJuego , {align: 'left'}).moveDown(1);
-        //});
-        doc.fontSize(15).text('Cliente con más compras: ', {align: 'left'}).moveDown(1);
-        doc.fontSize(12).text(clienteConMasCompras.nombreCliente, {align: 'left'}).moveDown(1);
+        juegoMasVendidoPorCategoria.forEach(juego => {
+            doc.fontSize(12).text(juego.categoria + ': ' + juego.nombrejuego , {align: 'left'}).moveDown(1);
+        });
+        console.log(clienteConMasCompras);
+        doc.fontSize(15).text('Cliente con más compras: ' + clienteConMasCompras[0].nombrecliente, {align: 'left'}).moveDown(1);
 
         doc.end();
-    
+        
         return informe;
+    }
+
+    async obtenerInforme(fechaInicial, fechaFinal){
+        
+        let juegosPedidos = await this.obtenerJuegosPedidos(fechaInicial, fechaFinal);
+        let totalVentas = await this.obtenerTotalVentas(fechaInicial, fechaFinal);
+        let juegoMasVendido = await this.obtenerJuegoMasVendido(fechaInicial, fechaFinal);
+        let juegoMasVendidoPorCategoria = await this.obtenerJuegoMasVendidoPorCategoria(fechaInicial, fechaFinal);
+        let clienteConMasCompras = await this.obtenerClienteConMasCompras(fechaInicial, fechaFinal);
+
+        let rutaInforme = await this.generarPdf(juegosPedidos, totalVentas, juegoMasVendido, juegoMasVendidoPorCategoria, clienteConMasCompras, fechaInicial, fechaFinal);
+    
+        return rutaInforme;
     }
 
 }
