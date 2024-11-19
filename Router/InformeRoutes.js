@@ -7,10 +7,10 @@ class InformeRoutes{
     }
     start(){
         const routerInforme = express.Router();
-        routerInforme.get('/informe/rango', this.informeController.obtenerInforme);
-        routerInforme.get('/informe/diario', this.informeController.obtenerInformeDiario);
-        routerInforme.get('/informe/mail/rango', this.informeController.obtenerInformePorMail);
-        routerInforme.get('/informe/mail/diario', this.informeController.obtenerInformeDiarioPorMail);
+        routerInforme.post('/informe/rango', this.informeController.obtenerInforme);
+        routerInforme.post('/informe/diario', this.informeController.obtenerInformeDiario);
+        routerInforme.post('/informe/mail/rango', this.informeController.obtenerInformePorMail);
+        routerInforme.post('/informe/mail/diario', this.informeController.obtenerInformeDiarioPorMail);
         return routerInforme
     }
 }
