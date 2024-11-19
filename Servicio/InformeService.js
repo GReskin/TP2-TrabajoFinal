@@ -96,7 +96,9 @@ class InformeService {
     }
 
     async obtenerInforme(fechaInicial, fechaFinal){
-        
+        let res = null
+        if(fechaInicial && fechaFinal ){
+                
         let juegosPedidos = await this.obtenerJuegosPedidos(fechaInicial, fechaFinal);
         let totalVentas = await this.obtenerTotalVentas(fechaInicial, fechaFinal);
         let juegoMasVendido = await this.obtenerJuegoMasVendido(fechaInicial, fechaFinal);
@@ -104,23 +106,26 @@ class InformeService {
         let clienteConMasCompras = await this.obtenerClienteConMasCompras(fechaInicial, fechaFinal);
 
         let rutaInforme = await this.generarPdf(juegosPedidos, totalVentas, juegoMasVendido, juegoMasVendidoPorCategoria, clienteConMasCompras, fechaInicial, fechaFinal);
-    
-        return rutaInforme;
+        res = rutaInforme
+        
+        }
+        return res;
     }
 
+    
     async obtenerInformePorMail(fechaInicial, fechaFinal, mail){
+        
         let rutaInforme = await this.obtenerInforme(fechaInicial, fechaFinal);
 
-        let res;
-
-        const options = {
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL,
-                pass: process.env.PASSWORD    
-            }
-        }
-
+        let res = "No se puede mandar el informe";
+        if(rutaInforme && mail ){   
+            const options = {
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL,
+                    pass: process.env.PASSWORD    
+                }
+            }    
         const transporter = nodemailer.createTransport(options);
 
         const mailOptions = {
@@ -136,15 +141,10 @@ class InformeService {
             ]
         }
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log('Error al enviar el informe: ' + error);
-                res = 'Error al enviar el informe: ' + error;
-            }
-            console.log('Informe enviado correctamente ' + info.response);
-            res = 'Informe enviado correctamente';
-        });
-        return res;
+        res = await transporter.sendMail(mailOptions);
+    }
+
+        return res;       
     }
 }
 

@@ -54,7 +54,6 @@ class JuegosService{
         }
         return res;
     }
-
 }
 
 export default JuegosService;
